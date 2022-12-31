@@ -3,6 +3,9 @@ from bs4 import BeautifulSoup
 import ctypes
 import re
 import time,datetime
+import os
+from playsound import playsound
+import threading
 
 
 #幻塔序號集中串
@@ -10,6 +13,14 @@ def concentrate_article_url(article_url):
     if article_url == "https://forum.gamer.com.tw/C.php?bsn=71040&snA=786&tnum=70":
         article_url = "https://forum.gamer.com.tw/C.php?page=20&bsn=71040&snA=786&tnum=70"
     return article_url
+
+#提示音
+def play_sound():
+    current_dir = os.getcwd()
+    file_path = os.path.join(current_dir, 'sound.wav')
+    if os.path.exists(file_path):
+        playsound(file_path)
+
 
 #表頭
 headers = {
@@ -38,7 +49,7 @@ while True:
             if filter in title_element.text:
                 # 檢查當前文章是否曾被搜索過
                 if title_element.text not in previous_articles:
-                    # 印出新文章的標題
+                    # 印出新文章的標題，標題使用那個原諒的顏色:)
                     ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 2)
                     print("【標題:{}】".format(title_element.text))
                     ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 7)
@@ -57,9 +68,9 @@ while True:
                         pattern = r'[A-Za-z0-9]{16}'
                         # 使用 findall 方法提取出所有序號
                         codes = re.findall(pattern, content_element.get_text())
-                        # 將提取出的序號條列式顯示
-                        for i, code in enumerate(codes):
-                            print("{}.{}".format(i + 1, code))
+                        # 顯示提取出的序號
+                        for code in codes:
+                            print(code)
                     # Add the current article to the list of previously retrieved articles
                     previous_articles.append(title_element.text)
                     new_articles.append(title_element.text)
@@ -69,6 +80,8 @@ while True:
         now = datetime.datetime.now()
         time_str = now.strftime("%m/%d %H:%M")
         print("{} 找到了 {} 篇新文章".format(time_str, len(new_articles)))
+        thread = threading.Thread(target=play_sound)
+        thread.start()
 
     time.sleep(30)
 
