@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import ctypes
 import re
-import time
+import time,datetime
 
 #表頭
 headers = {
@@ -54,7 +54,10 @@ while True:
                 break
     # If new articles were found, print the number of new articles found
     if len(new_articles) > 0:
-        print("找到 {} 篇新文章: {}".format(len(new_articles), ", ".join(new_articles)))
+        now = datetime.datetime.now()
+        time_str = now.strftime("%m/%d %H:%M")
+
+        print("{} 找到了 {} 篇新文章".format(time_str, len(new_articles)))
     # If no new articles were found, print a message
     else:
         print("沒有找到新文章")
