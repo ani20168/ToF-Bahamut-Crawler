@@ -83,7 +83,7 @@ while True:
         thread = threading.Thread(target=play_sound)
         thread.start()
 
-    time.sleep(20)
+    time.sleep(10)
 
 
 
