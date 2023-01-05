@@ -6,13 +6,13 @@ import time,datetime
 import os
 from playsound import playsound
 import threading
+import webhook
 
-
-#幻塔序號集中串
-def concentrate_article_url(article_url):
-    if article_url == "https://forum.gamer.com.tw/C.php?bsn=71040&snA=786&tnum=70":
-        article_url = "https://forum.gamer.com.tw/C.php?page=20&bsn=71040&snA=786&tnum=70"
-    return article_url
+#篩選列表
+filters = ["虛寶", "序號", "禮包"]
+filters_ignore = ["序號分享及兌換方式"]
+#是否使用 Discord 通知? 如需使用，請在下方新增你的webhook網址
+webhook.url = ""
 
 #提示音
 def play_sound():
@@ -21,14 +21,10 @@ def play_sound():
     if os.path.exists(file_path):
         playsound(file_path)
 
-
 #表頭
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
 }
-
-#篩選列表
-filters = ["虛寶", "序號", "禮包"]
 
 # 顯示過的文章
 previous_articles = []
@@ -45,20 +41,20 @@ while True:
     for element in elements:
         #尋找文章標題
         title_element = element.find(class_="b-list__main__title")
-        for filter in filters:
-            if filter in title_element.text:
+
+        if any(filter in title_element.text for filter in filters):
+            if not any(filter in title_element.text for filter in filters_ignore):
                 # 檢查當前文章是否曾被搜索過
                 if title_element.text not in previous_articles:
                     # 印出新文章的標題，標題使用那個原諒的顏色:)
                     ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 2)
                     print("【標題:{}】".format(title_element.text))
                     ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 7)
+                    webhook.ContentAdd(title_element.text) if webhook.url else None
 
                     #尋找內文網址
                     article_url = title_element.get("href")
                     article_url = "https://forum.gamer.com.tw/" + article_url
-                    #如果是幻塔的序號集中串，則直接進最後一頁
-                    article_url = concentrate_article_url(article_url)
 
                     response = requests.get(article_url,headers=headers)
                     article_soup = BeautifulSoup(response.text, "html.parser")
@@ -71,10 +67,11 @@ while True:
                         # 顯示提取出的序號
                         for code in codes:
                             print(code)
-                    # Add the current article to the list of previously retrieved articles
+                            webhook.ContentAdd(code) if webhook.url else None
+
+                    # 當前文章加入到搜索歷史
                     previous_articles.append(title_element.text)
                     new_articles.append(title_element.text)
-                break
     
     if len(new_articles) > 0:
         now = datetime.datetime.now()
@@ -82,6 +79,7 @@ while True:
         print("{} 找到了 {} 篇新文章".format(time_str, len(new_articles)))
         thread = threading.Thread(target=play_sound)
         thread.start()
+        webhook.Post() if webhook.url else None
 
     time.sleep(10)
 
