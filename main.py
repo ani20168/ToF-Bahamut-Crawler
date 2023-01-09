@@ -29,6 +29,11 @@ headers = {
 # 顯示過的文章
 previous_articles = []
 
+print('''
+====================
+ 巴哈哈拉版序號爬蟲
+====================''')
+
 while True:
     # 使用 requests 套件請求目標網站的 HTML 頁面
     response = requests.get("https://forum.gamer.com.tw/B.php?bsn=71040",headers=headers)
@@ -41,12 +46,12 @@ while True:
     for element in elements:
         #尋找文章標題
         title_element = element.find(class_="b-list__main__title")
-
+        #篩選標題
         if any(filter in title_element.text for filter in filters):
             if not any(filter in title_element.text for filter in filters_ignore):
                 # 檢查當前文章是否曾被搜索過
                 if title_element.text not in previous_articles:
-                    # 印出新文章的標題，標題使用那個原諒的顏色:)
+                    # 印出新文章的標題
                     ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 2)
                     print("【標題:{}】".format(title_element.text))
                     ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 7)
@@ -60,11 +65,10 @@ while True:
                     article_soup = BeautifulSoup(response.text, "html.parser")
                     content_elements = article_soup.find_all(class_="c-article__content")
                     for content_element in content_elements:
-                        # 匹配 16 位英數字混合亂碼的正規表達式
+                        # 序號規則匹配
                         pattern = r'[A-Za-z0-9]{16}'
-                        # 使用 findall 方法提取出所有序號
+                        # 提取序號並顯示
                         codes = re.findall(pattern, content_element.get_text())
-                        # 顯示提取出的序號
                         for code in codes:
                             print(code)
                             webhook.ContentAdd(code) if webhook.url else None
