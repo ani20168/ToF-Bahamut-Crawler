@@ -1,7 +1,7 @@
 # ToF Bahamut Crawler
 ![image](https://github.com/ani20168/ToF-Bahamut-Crawler/blob/main/ReadmeImage.png)
 
-在巴哈姆特幻塔的哈拉版上爬來爬去，把序號爬出來  
+在巴哈姆特幻塔的哈拉版上擷取序號  
 有爬到新的文章，會有音效提示，所以可以安心放在後台不用怕漏掉  
 上面的是最初版本，更新後我把編號功能拿掉了，這樣在複製序號時比較方便  
 預設是篩選"序號"、"虛寶"、"禮包"這三個文章標題  
@@ -9,7 +9,8 @@
 你可以設定discord webhook來接收通知，請在main.py內填入你的webhook網址
 
 ## 環境要求
-在當前目錄下開CMD輸入:
+1.需要Python執行環境  
+2.在當前目錄下開CMD輸入:
 `pip install -r requirements.txt --upgrade`
 
 ## 改爬其他哈拉版的序號
