@@ -66,7 +66,7 @@ while True:
                     content_elements = article_soup.find_all(class_="c-article__content")
                     for content_element in content_elements:
                         # 序號規則匹配
-                        pattern = r'[A-Za-z0-9]{16}'
+                        pattern = r'[A-Za-z0-9]{13}'
                         # 提取序號並顯示
                         codes = re.findall(pattern, content_element.get_text())
                         for code in codes:
