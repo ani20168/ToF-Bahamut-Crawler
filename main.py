@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+import ctypes
 import time
 import datetime
 import os
@@ -35,7 +36,7 @@ def crawl():
         soup = BeautifulSoup(response.text, "html.parser")
     except (requests.exceptions.Timeout, requests.exceptions.RequestException):
         # 處理請求超時或者連接錯誤等異常
-        print(f"{datetime.datetime.now()} 請求失敗")
+        print(f"{datetime.datetime.now().strftime('%m/%d %H:%M:%S')} 請求失敗")
         return
         
     article_elements = soup.find_all(class_="b-list__row b-list-item b-imglist-item")
@@ -49,7 +50,9 @@ def crawl():
         if any(filter in title for filter in FILTERS) and not any(filter in title for filter in FILTERS_IGNORE):
             if title not in SEARCHED_ARTICLES:
                 # 新文章，進行處理
+                ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 2) #變更標題顏色
                 print(f"【標題：{title}】")
+                ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 7)
                 webhook.ContentAdd(title) if webhook.url else None
 
                 article_url = "https://forum.gamer.com.tw/" + title_element.get("href")
@@ -81,9 +84,10 @@ def crawl():
 
 # 主程式
 if __name__ == "__main__":
-    print("============")
-    print("巴哈哈拉版序號爬蟲")
-    print("============")
+    print('''
+    ==================
+    巴哈哈拉版序號爬蟲
+    ==================''')
 
     while True:
         crawl()
