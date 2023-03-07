@@ -30,8 +30,14 @@ def play_sound():
 
 # 定義爬蟲函數
 def crawl():
-    response = requests.get(URL, headers=HEADERS)
-    soup = BeautifulSoup(response.text, "html.parser")
+    try:
+        response = requests.get(URL, headers=HEADERS, timeout=5)
+        soup = BeautifulSoup(response.text, "html.parser")
+    except (requests.exceptions.Timeout, requests.exceptions.RequestException):
+        # 處理請求超時或者連接錯誤等異常
+        print(f"{datetime.datetime.now()} 請求失敗")
+        return
+        
     article_elements = soup.find_all(class_="b-list__row b-list-item b-imglist-item")
 
     new_articles = []
