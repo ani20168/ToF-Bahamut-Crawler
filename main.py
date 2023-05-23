@@ -82,7 +82,10 @@ def crawl():
         # 有新文章，提示並發送 Discord 通知
         now = datetime.datetime.now().strftime("%m/%d %H:%M")
         print(f"{now} 找到了 {len(new_articles)} 篇新文章")
-        threading.Thread(target=play_sound).start()
+        try:
+            threading.Thread(target=play_sound).start()
+        except:
+            pass
         webhook.Post() if webhook.url else None
 
 # 主程式
