@@ -51,11 +51,13 @@ def crawl():
             if title not in scarched_articles:
                 # 新文章，進行處理
                 ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 2) #變更標題顏色
-                print(f"【標題：{title}】")
-                ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 7)
+                print(f"【標題：{title}】")             
                 webhook.ContentAdd(title) if webhook.url else None
 
+                #要求文章網址
                 article_url = "https://forum.gamer.com.tw/" + title_element.get("href")
+                print(f"【網址：{article_url}】")
+                ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 7)
                 response = requests.get(article_url, headers=HEADERS)
                 article_soup = BeautifulSoup(response.text, "html.parser")
                 content_elements = article_soup.find_all(class_="c-article__content")
