@@ -57,6 +57,7 @@ def crawl():
                 #要求文章網址
                 article_url = "https://forum.gamer.com.tw/" + title_element.get("href")
                 print(f"【網址：{article_url}】")
+                webhook.ContentAdd(article_url) if webhook.url else None
                 ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 7)
                 response = requests.get(article_url, headers=HEADERS)
                 article_soup = BeautifulSoup(response.text, "html.parser")
