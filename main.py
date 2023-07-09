@@ -66,7 +66,7 @@ def crawl():
                 codes = []
                 for content_element in content_elements:
                     # 匹配序號
-                    pattern = r"[A-Za-z0-9]{13}"
+                    pattern = r"[A-Za-z0-9]{13,16}"
                     codes.extend(re.findall(pattern, content_element.get_text()))
 
                 # 輸出序號
