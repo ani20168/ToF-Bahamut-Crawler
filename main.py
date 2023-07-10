@@ -45,17 +45,17 @@ def crawl():
     for article in article_elements:
         title_element = article.find(class_="b-list__main__title")
         title = title_element.text
-
+        #要求文章網址
+        article_url = "https://forum.gamer.com.tw/" + title_element.get("href")
+        
         # 過濾文章
         if any(filter in title for filter in filters) and not any(filter in title for filter in filters_ignore):
-            if title not in scarched_articles:
+            if article_url not in scarched_articles:
                 # 新文章，進行處理
                 ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 2) #變更標題顏色
                 print(f"【標題：{title}】")             
                 webhook.ContentAdd(title) if webhook.url else None
 
-                #要求文章網址
-                article_url = "https://forum.gamer.com.tw/" + title_element.get("href")
                 print(f"【網址：{article_url}】")
                 webhook.ContentAdd(article_url) if webhook.url else None
                 ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 7)
@@ -75,7 +75,7 @@ def crawl():
                     webhook.ContentAdd(code) if webhook.url else None
 
                 # 將已搜索過的文章加入列表
-                scarched_articles.append(title)
+                scarched_articles.append(article_url)
                 new_articles.append(title)
 
     if len(new_articles) > 0:
