@@ -32,8 +32,8 @@ def play_sound():
 # 匹配一頁的序號
 def find_code_in_page(content_elements) -> list:
     codes = []
+    pattern = r"\b([A-Za-z0-9]{17}|[A-Za-z0-9]{16}|[A-Za-z0-9]{13})\b"
     for content_element in content_elements:
-        pattern = r"\b([A-Za-z0-9]{17}|[A-Za-z0-9]{16}|[A-Za-z0-9]{13})\b"
         matches = re.finditer(pattern, str(content_element))
         codes.extend(match.group(1) for match in matches if match.group(1))
     return codes
