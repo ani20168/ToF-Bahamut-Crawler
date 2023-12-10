@@ -29,6 +29,15 @@ def play_sound():
     if os.path.exists(sound_path):
         playsound(sound_path)
 
+# 匹配一頁的序號
+def find_code_in_page(content_elements) -> list:
+    codes = []
+    for content_element in content_elements:
+        pattern = r"\b([A-Za-z0-9]{17}|[A-Za-z0-9]{16}|[A-Za-z0-9]{13})\b"
+        matches = re.finditer(pattern, str(content_element))
+        codes.extend(match.group(1) for match in matches if match.group(1))
+    return codes
+
 # 定義爬蟲函數
 def crawl():
     try:
@@ -63,14 +72,10 @@ def crawl():
                 article_soup = BeautifulSoup(response.text, "html.parser")
                 content_elements = article_soup.find_all(class_="c-article__content")
 
-                codes = []
-                for content_element in content_elements:
-                    # 匹配序號
-                    pattern = r"[A-Za-z0-9]{13,16}"
-                    codes.extend(re.findall(pattern, content_element.get_text()))
+                codes_in_page = find_code_in_page(content_elements)
 
                 # 輸出序號
-                for code in codes:
+                for code in codes_in_page:
                     print(code)
                     webhook.ContentAdd(code) if webhook.url else None
 
