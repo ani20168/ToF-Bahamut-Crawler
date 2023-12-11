@@ -9,7 +9,7 @@ import threading
 from playsound import playsound
 import webhook
 
-# 定義常數
+
 url = "https://forum.gamer.com.tw/B.php?bsn=71040" #要爬取的哈拉版
 filters = ["虛寶", "序號", "禮包"]                  #篩選這些標題
 filters_ignore = ["序號分享及兌換方式"]             #忽略標題
@@ -24,7 +24,6 @@ HEADERS = {
 # 定義已搜索過的文章列表
 scarched_articles = []
 
-# 定義提示音函數
 def play_sound():
     if os.path.exists(sound_path):
         playsound(sound_path)
@@ -37,6 +36,18 @@ def find_code_in_page(content_elements) -> list:
         matches = re.finditer(pattern, str(content_element))
         codes.extend(match.group(1) for match in matches if match.group(1))
     return codes
+
+#檢查文章是否有多頁
+def multipage_check(article_element):
+    title_element = article_element.find(class_="b-list__main__title")
+    article_url = "https://forum.gamer.com.tw/" + title_element.get("href")
+
+    # 檢查是否有多頁，如果是，找出最後一頁的網址
+    pages_element = article_element.find(class_="b-list__main__pages")
+    if pages_element:
+        article_url = "https://forum.gamer.com.tw/" + pages_element.find_all("span")[-1].get("data-page")
+        
+    return article_url
 
 # 定義爬蟲函數
 def crawl():
@@ -55,7 +66,8 @@ def crawl():
         title_element = article.find(class_="b-list__main__title")
         title = title_element.text
         #要求文章網址
-        article_url = "https://forum.gamer.com.tw/" + title_element.get("href")
+        article_url = multipage_check(article)
+
         
         # 過濾文章
         if any(filter in title for filter in filters) and not any(filter in title for filter in filters_ignore):
